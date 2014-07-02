@@ -26,7 +26,7 @@
 
     while ($clampTop.height() < maxHeight) {
       nextChar = chars.shift();
-      if (typeof nextChar === 'undefined') {
+      if (nextChar == null) {
         $el.text(text);
         return;
       }
@@ -49,10 +49,10 @@
 
   $.fn.clamp = function(lines, moreText, lessText) {
     var $el = this;
-    if (typeof moreText === 'undefined') {
+    if (moreText == null) {
       moreText = 'show more';
     }
-    if (typeof lessText === 'undefined') {
+    if (lessText == null) {
       lessText = lessText || 'show less';
     }
     $el.each(function() {
