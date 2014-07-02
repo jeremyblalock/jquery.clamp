@@ -1,34 +1,40 @@
 (function($) {
   function mutableClamp($el, lines, moreText, lessText) {
     var text = $el.text(),
+        partialText = '',
         chars = text.split(''),
-        $clampTop,
-        $clampTopText,
-        $clampBottom,
-        $clampEllipsis,
-        $clampLink,
-        $hideLink,
+        $clampTop = $('<span class="clamp-visible"></span>'),
+        $clampTopText = $('<span></span>'),
+        $clampBottom = $('<span class="clamp-hidden"></span>')
+                          .text(text + ' ').hide(),
+        $clampEllipsis = $('<span>... </span>'),
+        $clampLink = $('<a class="clamp-link" href="#"></a>')
+                          .text(moreText),
+        $hideLink = $('<a class="clamp-link" href="#"></a>').text(lessText),
         lineHeight = parseInt($el.css('line-height')) + 1,
-        maxHeight = lineHeight * lines;
+        maxHeight = lineHeight * lines,
+        nextChar;
+
     if ($el.height() < maxHeight) {
       return;
     }
+
     $el.text('');
-    $clampTop = $('<span class="clamp-visible"></span>');
-    $clampTopText = $('<span></span>');
-    $clampBottom = $('<span class="clamp-hidden"></span>').text(text + ' ').hide();
-    $clampEllipsis = $('<span>... </span>');
-    $clampLink = $('<a class="clamp-link" href="#"></a>').text(moreText);
-    $hideLink = $('<a class="clamp-link" href="#"></a>').text(lessText);
     $clampBottom.append($hideLink);
-    
     $clampTop.append($clampTopText, $clampEllipsis, $clampLink);
     $el.append($clampTop, $clampBottom);
+
     while ($clampTop.height() < maxHeight) {
-      $clampTopText.get(0).innerHTML += chars.shift();
+      nextChar = chars.shift();
+      if (typeof nextChar === 'undefined') {
+        $el.text(text);
+        return;
+      }
+      partialText += nextChar;
+      $clampTopText.text(partialText);
     }
     $clampTopText.text($clampTopText.text().slice(0, -1));
-    
+
     $clampLink.on('click', function(e) {
       e.preventDefault();
       $clampTop.hide();
